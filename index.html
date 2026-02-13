@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Order Automation System - Enterprise Solution</title>
+  <meta name="description" content="AI-powered order automation with instant processing, inventory validation, and email confirmations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo-brand">📦 AI Order System</div>
+      <nav class="nav-links">
+        <a href="#form-section" class="nav-cta">Start Ordering</a>
+        <div class="auth-nav" id="auth-nav">
+          <!-- Login button shown when not authenticated -->
+          <button class="btn btn-secondary" id="login-btn" onclick="showAuthModal('login')">Login / Register</button>
+        </div>
+        <!-- User profile shown when authenticated -->
+        <div class="user-profile hidden" id="user-profile">
+          <span class="user-email" id="user-email"></span>
+          <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+      <div class="auth-modal-content">
+        <button class="auth-close-btn" onclick="closeAuthModal()">✕</button>
+        
+        <!-- Login Form -->
+        <div id="login-form-container" class="auth-form-container">
+          <h2>Welcome Back</h2>
+          <p class="auth-subtitle">Sign in to your account</p>
+          
+          <form id="login-form" class="auth-form">
+            <div class="form-group">
+              <label for="login_email" class="form-label">Email Address <span class="required">*</span></label>
+              <input type="email" id="login_email" name="email" placeholder="your@email.com" required>
+              <span class="form-error"></span>
+            </div>
+            
+            <div class="form-group">
+              <label for="login_password" class="form-label">Password <span class="required">*</span></label>
+              <input type="password" id="login_password" name="password" placeholder="Enter password" required>
+              <span class="form-error"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+          </form>
+          
+          <div class="auth-toggle">
+            <p>Don't have an account? <button type="button" onclick="switchAuthForm('register')" class="link-btn">Register here</button></p>
+          </div>
+          
+          <div id="login-response" class="response-message hidden"></div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="register-form-container" class="auth-form-container hidden">
+          <h2>Create Account</h2>
+          <p class="auth-subtitle">Register with your email to start ordering</p>
+          
+          <form id="register-form" class="auth-form">
+            <div class="form-group">
+              <label for="register_email" class="form-label">Email Address <span class="required">*</span></label>
+              <input type="email" id="register_email" name="email" placeholder="your@email.com" required>
+              <span class="form-error"></span>
+              <small class="email-tip">We'll verify this email for your orders</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="register_name" class="form-label">Full Name <span class="required">*</span></label>
+              <input type="text" id="register_name" name="name" placeholder="Your Full Name" required>
+              <span class="form-error"></span>
+            </div>
+            
+            <div class="form-group">
+              <label for="register_password" class="form-label">Password <span class="required">*</span></label>
+              <input type="password" id="register_password" name="password" placeholder="Min 6 characters" required>
+              <span class="form-error"></span>
+            </div>
+            
+            <div class="form-group">
+              <label for="register_confirm" class="form-label">Confirm Password <span class="required">*</span></label>
+              <input type="password" id="register_confirm" name="confirm_password" placeholder="Confirm password" required>
+              <span class="form-error"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+          </form>
+          
+          <div class="auth-toggle">
+            <p>Already have an account? <button type="button" onclick="switchAuthForm('login')" class="link-btn">Sign in here</button></p>
+          </div>
+          
+          <div id="register-response" class="response-message hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-gradient"></div>
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">AI Order Automation System</h1>
+          <p class="hero-subtitle">Intelligent order processing with real-time inventory validation, AI-powered insights, and instant email confirmations</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="goToForm()">Get Started</button>
+          </div>
+        </div>
+        <div class="hero-graphic"></div>
+      </div>
+    </section>
+
+    <!-- About Section removed per request -->
+
+    <!-- Order & Quotation Form Section (Dashboard style) -->
+    <section id="form-section" class="form-section">
+      <div class="container">
+        <div class="dashboard">
+          <aside class="sidebar">
+            <div class="sidebar-brand">Order Intelligence</div>
+            <nav class="sidebar-nav">
+              <a id="nav-new-order" class="active" onclick="showNewOrder()">New Order</a>
+              <a id="nav-products" onclick="showProducts()">Products</a>
+              <a id="nav-order-history" onclick="showOrderHistory()">Order History</a>
+              <a id="nav-signin" href="#" onclick="showAuthModal('login')">Sign In</a>
+            </nav>
+            <div class="sidebar-footer">ayush.joshi2402@gmail.com</div>
+          </aside>
+
+          <main class="dashboard-main">
+            <!-- Products View -->
+            <div id="products-view" class="products-view hidden">
+              <div class="products-header">
+                <h2>Products</h2>
+                <input id="product-search" class="product-search" placeholder="Search products..." />
+              </div>
+              <div id="products-grid" class="products-grid"></div>
+            </div>
+
+            <!-- Order History View -->
+            <div id="order-history-view" class="order-history-view hidden">
+              <div class="order-history-header">
+                <h2>Order History</h2>
+                <p class="order-history-subtitle" id="order-history-subtitle"></p>
+              </div>
+              <div id="order-history-container" class="order-history-container"></div>
+            </div>
+
+            <!-- Order/Form View -->
+            <div id="order-view" class="order-view">
+              <div class="form-wrapper">
+              <div class="form-header">
+                <h2>New Order</h2>
+                <p>Place an order quickly using your verified account</p>
+              </div>
+
+              <!-- Tabs Navigation -->
+              <div class="form-tabs">
+                <button class="form-tab-btn active" data-tab="order-tab" onclick="switchFormTab('order')">
+                  <span class="tab-icon">📦</span>
+                  <span class="tab-text">Order</span>
+                </button>
+                <button class="form-tab-btn" data-tab="quotation-tab" onclick="switchFormTab('quotation')">
+                  <span class="tab-icon">📋</span>
+                  <span class="tab-text">Quotation</span>
+                </button>
+              </div>
+
+              <!-- Login Required Message -->
+              <div id="login-required-msg" class="info-message hidden">
+                <strong>📧 Sign in required:</strong> Please <button type="button" class="link-btn" onclick="showAuthModal('login')">login or register</button> with your email to place orders or request quotations.
+              </div>
+
+              <!-- User Info Display -->
+              <div id="user-info-display" class="user-info-display hidden">
+                <p><strong>✓ Registered as:</strong> <span id="form-user-email"></span></p>
+              </div>
+
+              <!-- ORDER TAB ====================-->
+              <div id="order-tab" class="form-tab-content active">
+                <form id="order-form" class="order-form">
+                  <!-- Product Name -->
+                  <div class="form-group">
+                    <label for="product_name" class="form-label">Product</label>
+                    <select id="product_name" name="product_name">
+                      <option value="">Select a product</option>
+                      <option>Product A</option>
+                      <option>Product B</option>
+                    </select>
+                    <span class="form-error"></span>
+                  </div>
+
+                  <!-- Quantity -->
+                  <div class="form-group">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1">
+                    <span class="form-error"></span>
+                  </div>
+
+                  <!-- Customer (pre-filled) -->
+                  <div class="form-group">
+                    <label for="customer_name" class="form-label">Customer</label>
+                    <input type="text" id="customer_name" name="customer_name" placeholder="Your name">
+                    <span class="form-error"></span>
+                  </div>
+
+                  <!-- Shipping Address -->
+                  <div class="form-group">
+                    <label for="shipping_address" class="form-label">Shipping Address</label>
+                    <textarea id="shipping_address" name="shipping_address" rows="3" placeholder="Enter shipping address"></textarea>
+                  </div>
+
+                  <!-- Special Instructions -->
+                  <div class="form-group">
+                    <label for="special_instructions" class="form-label">Special Instructions (optional)</label>
+                    <textarea id="special_instructions" name="special_instructions" rows="2" placeholder="Any special requests..."></textarea>
+                  </div>
+
+                  <input type="hidden" id="customer_email" name="customer_email">
+                  <input type="hidden" id="order_type_order" name="order_type" value="order">
+
+                  <button type="submit" class="btn btn-primary btn-submit" id="submit-btn">
+                    <span class="btn-text">Submit Order</span>
+                    <span class="btn-loader hidden"></span>
+                  </button>
+                </form>
+
+                <div id="response-message" class="response-message hidden"></div>
+              </div>
+
+              <!-- QUOTATION TAB (kept simpler) -->
+              <div id="quotation-tab" class="form-tab-content">
+                <form id="quotation-form" class="quotation-form">
+                  <div class="form-group">
+                    <label for="quotation_product_name" class="form-label">Product Name</label>
+                    <input type="text" id="quotation_product_name" name="product_name">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="quotation_quantity" class="form-label">Quantity</label>
+                    <input type="number" id="quotation_quantity" name="quantity" min="1">
+                  </div>
+                  <input type="hidden" id="quotation_customer_email" name="customer_email">
+                  <button type="submit" class="btn btn-primary btn-submit" id="quotation-submit-btn">
+                    <span class="btn-text">Request Quotation</span>
+                    <span class="btn-loader hidden"></span>
+                  </button>
+                </form>
+                <div id="quotation-response-message" class="response-message hidden"></div>
+              </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; <span id="year"></span> AI Order Automation System. All rights reserved.</p>
+      <p>Enterprise-grade automation powered by AI</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
