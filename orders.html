@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders - AI Order Automation System</title>
+  <meta name="description" content="Place orders and request quotations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', (t === 'light' || t === 'dark') ? t : 'dark');
+    })();
+  </script>
+</head>
+<body>
+  <header class="navbar app-header">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="index.html" class="logo-brand"><span class="logo-icon">📦</span> AI Order System</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle theme">🌙</button>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="orders.html" class="nav-link nav-link--active">Products</a>
+          <a href="#order" class="nav-link">Orders</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="#order" class="btn btn-add-item">Add Item</a>
+        <div class="auth-nav" id="auth-nav">
+          <button class="btn btn-secondary" onclick="showAuthModal('login')">Sign In</button>
+        </div>
+        <div class="user-profile header-user hidden" id="user-profile">
+          <span class="user-avatar">👤</span>
+          <span class="user-email" id="user-email"></span>
+          <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Order & Quotation Form Section (Dashboard style) -->
+    <section id="form-section" class="form-section app-dashboard">
+      <div class="container full-bleed">
+        <div id="order"></div>
+        <div id="quotation"></div>
+        <div id="complaint"></div>
+        <div id="review"></div>
+        <div id="products"></div>
+        <div id="history"></div>
+        <div class="dashboard">
+          <aside class="sidebar app-sidebar">
+            <nav class="sidebar-nav">
+              <a id="nav-new-order" class="active" href="#order"><span class="sidebar-icon">📋</span><span>New Order</span></a>
+              <a id="nav-quotation" href="#quotation"><span class="sidebar-icon">💬</span><span>Quotation</span></a>
+              <a id="nav-products" href="#products"><span class="sidebar-icon">🛍️</span><span>Products</span></a>
+              <a id="nav-order-history" href="#history"><span class="sidebar-icon">📊</span><span>Order History</span></a>
+              <a id="nav-complaint" href="#complaint"><span class="sidebar-icon">⚠️</span><span>Complaints</span></a>
+              <a id="nav-review" href="#review"><span class="sidebar-icon">⭐</span><span>Review</span></a>
+              <a id="nav-signin" href="#" onclick="showAuthModal('login'); return false;"><span class="sidebar-icon">🔐</span><span>Sign In</span></a>
+            </nav>
+          </aside>
+
+          <main class="dashboard-main app-main">
+            <!-- Products View (reference-style) -->
+            <div id="products-view" class="products-view hidden">
+              <div class="category-tabs">
+                <button type="button" class="category-tab active" data-category="all">All</button>
+              </div>
+              <h2 class="content-section-title">Interactive Filter & Compare</h2>
+              <div class="products-header">
+                <input id="product-search" class="product-search app-search" placeholder="Search products..." />
+              </div>
+              <div id="products-grid" class="products-grid app-product-grid"></div>
+              <h2 class="content-section-title shop-story-title">Shop The Story</h2>
+              <div id="products-grid-story" class="products-grid app-product-grid"></div>
+            </div>
+
+            <!-- Order History View -->
+            <div id="order-history-view" class="order-history-view hidden">
+              <div class="order-history-header">
+                <h2>Order History</h2>
+                <p class="order-history-subtitle" id="order-history-subtitle"></p>
+              </div>
+              <div id="order-history-container" class="order-history-container"></div>
+            </div>
+
+            <!-- Order View (separate) -->
+            <div id="order-view" class="order-view">
+              <div class="form-wrapper">
+                <div class="form-header">
+                  <h2>New Order</h2>
+                  <p>Place an order quickly using your verified account</p>
+                </div>
+                <div id="login-required-msg" class="info-message hidden">
+                  <strong>🔐 Sign in required:</strong> Please <button type="button" class="link-btn" onclick="showAuthModal('login')">sign in with Google</button> to place orders.
+                </div>
+                <div id="user-info-display" class="user-info-display hidden">
+                  <p><strong>✓ Registered as:</strong> <span id="form-user-email"></span></p>
+                </div>
+                <form id="order-form" class="order-form">
+                  <div class="form-group">
+                    <label for="product_name" class="form-label">Product</label>
+                    <select id="product_name" name="product_name">
+                      <option value="">Select a product</option>
+                      <option>Product A</option>
+                      <option>Product B</option>
+                    </select>
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="customer_name" class="form-label">Customer</label>
+                    <input type="text" id="customer_name" name="customer_name" placeholder="Your name">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="shipping_address" class="form-label">Shipping Address</label>
+                    <textarea id="shipping_address" name="shipping_address" rows="3" placeholder="Enter shipping address"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="special_instructions" class="form-label">Special Instructions (optional)</label>
+                    <textarea id="special_instructions" name="special_instructions" rows="2" placeholder="Any special requests..."></textarea>
+                  </div>
+                  <input type="hidden" id="customer_email" name="customer_email">
+                  <input type="hidden" id="order_type_order" name="order_type" value="order">
+                  <button type="submit" class="btn btn-primary btn-submit" id="submit-btn">
+                    <span class="btn-text">Submit Order</span>
+                    <span class="btn-loader hidden"></span>
+                  </button>
+                </form>
+                <div id="response-message" class="response-message hidden"></div>
+              </div>
+            </div>
+
+            <!-- Quotation View (separate) -->
+            <div id="quotation-view" class="quotation-view hidden">
+              <div class="form-wrapper">
+                <div class="form-header">
+                  <h2>Request Quotation</h2>
+                  <p>Get a detailed quotation for bulk orders or custom requirements</p>
+                </div>
+                <div id="login-required-msg-quotation" class="info-message hidden">
+                  <strong>🔐 Sign in required:</strong> Please <button type="button" class="link-btn" onclick="showAuthModal('login')">sign in with Google</button> to request a quotation.
+                </div>
+                <div id="user-info-display-quotation" class="user-info-display hidden">
+                  <p><strong>✓ Registered as:</strong> <span id="form-user-email-quotation"></span></p>
+                </div>
+                <form id="quotation-form" class="quotation-form">
+                  <div class="form-group">
+                    <label for="quotation_product_name" class="form-label">Product Name</label>
+                    <input type="text" id="quotation_product_name" name="product_name">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="quotation_quantity" class="form-label">Quantity</label>
+                    <input type="number" id="quotation_quantity" name="quantity" min="1">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="quotation_customer_name" class="form-label">Customer Name</label>
+                    <input type="text" id="quotation_customer_name" name="customer_name" placeholder="Your name">
+                    <span class="form-error"></span>
+                  </div>
+                  <input type="hidden" id="quotation_customer_email" name="customer_email">
+                  <button type="submit" class="btn btn-primary btn-submit" id="quotation-submit-btn">
+                    <span class="btn-text">Request Quotation</span>
+                    <span class="btn-loader hidden"></span>
+                  </button>
+                </form>
+                <div id="quotation-response-message" class="response-message hidden"></div>
+              </div>
+            </div>
+
+            <!-- REVIEW VIEW -->
+            <div id="review-view" class="review-view hidden">
+              <div class="form-wrapper">
+                <div class="form-header">
+                  <h2>Submit Your Review</h2>
+                  <p>Share your feedback — our AI analyzes sentiment and sends you a personalized email response</p>
+                </div>
+                <form id="review-form" class="review-form">
+                  <div class="form-group">
+                    <label for="review_name" class="form-label">Your Name <span class="required">*</span></label>
+                    <input type="text" id="review_name" name="review_name" placeholder="Full name">
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="review_email" class="form-label">Email <span class="required">*</span></label>
+                    <input type="email" id="review_email" name="review_email" placeholder="your@email.com">
+                    <span class="form-hint">When signed in, your registered Gmail is used.</span>
+                    <span class="form-error"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="review_text" class="form-label">Your Review <span class="required">*</span></label>
+                    <textarea id="review_text" name="review_text" rows="5" placeholder="Share your experience, feedback, or thoughts..."></textarea>
+                    <span class="form-error"></span>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-submit" id="review-submit-btn">
+                    <span class="btn-text">Submit Review</span>
+                    <span class="btn-loader hidden"></span>
+                  </button>
+                </form>
+                <div id="review-response-message" class="response-message hidden"></div>
+              </div>
+            </div>
+
+            <!-- COMPLAINT VIEW -->
+            <div id="complaint-view" class="complaint-view hidden">
+              <form id="complaint-form" class="complaint-form">
+                <div class="form-group">
+                  <label for="complaint_name" class="form-label">Your Name</label>
+                  <input type="text" id="complaint_name" name="complaint_name" placeholder="Full name">
+                  <span class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="complaint_contact" class="form-label">Contact (Email)</label>
+                  <input type="text" id="complaint_contact" name="complaint_contact" placeholder="Your registered Gmail is used when signed in">
+                  <span class="form-hint">When signed in, your registered Gmail is used.</span>
+                  <span class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="complaint_description" class="form-label">Complaint / Issue Description</label>
+                  <textarea id="complaint_description" name="complaint_description" rows="4" placeholder="Describe the problem..."></textarea>
+                  <span class="form-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-submit" id="complaint-submit-btn">
+                  <span class="btn-text">Submit Complaint</span>
+                  <span class="btn-loader hidden"></span>
+                </button>
+              </form>
+              <div id="complaint-response-message" class="response-message hidden"></div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; <span id="year"></span> AI Order Automation System. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK (compat version for global usage) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Auth Module -->
+  <script src="firebase-auth.js"></script>
+
+  <!-- Firebase Config -->
+  <script src="firebase-config.js"></script>
+
+  <!-- Main App Script -->
+  <script src="script.js"></script>
+</body>
+</html>
