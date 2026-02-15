@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Order Automation System - Enterprise Solution</title>
+  <meta name="description" content="AI-powered order automation with instant processing, inventory validation, and email confirmations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', (t === 'light' || t === 'dark') ? t : 'dark');
+    })();
+  </script>
+</head>
+<body>
+  <!-- App-style Header (reference) -->
+  <header class="navbar app-header">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="index.html" class="logo-brand"><span class="logo-icon">📦</span> AI Order System</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" title="Toggle light/dark theme" aria-label="Toggle theme">🌙</button>
+        <nav class="nav-main-links">
+          <a href="index.html" class="nav-link nav-link--active">Home</a>
+          <a href="orders.html" class="nav-link">Products</a>
+          <a href="orders.html#order" class="nav-link">Orders</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="orders.html#order" class="btn btn-add-item" id="nav-cta-btn">Add Item</a>
+        <div class="auth-nav" id="auth-nav">
+          <button class="btn btn-secondary" id="login-btn" onclick="showAuthModal('login')">Sign In</button>
+        </div>
+        <div class="user-profile header-user hidden" id="user-profile">
+          <span class="user-avatar">👤</span>
+          <span class="user-email" id="user-email"></span>
+          <button class="btn btn-outline btn-small" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="auth-modal hidden">
+      <div class="auth-modal-content">
+        <button class="auth-close-btn" onclick="closeAuthModal()">✕</button>
+        
+        <!-- Login Form -->
+        <div id="login-form-container" class="auth-form-container">
+          <h2>Welcome Back</h2>
+          <p class="auth-subtitle">Sign in to your account</p>
+          
+          <div style="padding:0.5rem 0;">
+            <p class="auth-subtitle">Sign in using your Google account</p>
+            <button type="button" class="btn btn-secondary btn-full" onclick="handleGoogleSignIn()" style="background: #f3f3f3; color: #444; font-weight: 500;">
+              <span>🔵 Sign in with Google</span>
+            </button>
+            <p style="margin-top:0.75rem;color:var(--text-secondary);font-size:0.95rem;">No email/password required — use Google to sign in.</p>
+          </div>
+          
+          <div id="login-response" class="response-message hidden"></div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="register-form-container" class="auth-form-container hidden">
+          <h2>Create Account</h2>
+          <p class="auth-subtitle">Register with your email to start ordering</p>
+          
+          <div style="padding:0.5rem 0;">
+            <p class="auth-subtitle">Create your account with Google</p>
+            <button type="button" class="btn btn-secondary btn-full" onclick="handleGoogleSignIn()" style="background: #f3f3f3; color: #444; font-weight: 500;">
+              <span>🔵 Sign up with Google</span>
+            </button>
+            <p style="margin-top:0.75rem;color:var(--text-secondary);font-size:0.95rem;">We only accept Google sign-in; no separate email/password signup.</p>
+          </div>
+          
+          <div id="register-response" class="response-message hidden"></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-gradient"></div>
+      <div class="hero-container">
+        <div class="hero-content">
+          <span class="hero-badge">AI-Powered · Enterprise</span>
+          <h1 class="hero-title">Order automation that scales</h1>
+          <p class="hero-subtitle">Intelligent order processing with real-time inventory validation, AI-powered insights, and instant email confirmations.</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary btn-hero" onclick="showAuthModal('login')"><span>Get Started</span><span class="btn-arrow">→</span></button>
+          </div>
+        </div>
+        <div class="hero-graphic">
+          <img class="hero-graphic-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmPS57DAo09zh5eRMOVlGoMct4Tl6jGhH2jMWauMJZg7Z_ovJbxQaMFCYKeovW6OFF3GzWHAbLdn6ZSjf39Lqzuhxb81A2wiBdWgvMpW0ZnMBkGKJbmxEYzjeiQ0tAEnRHspqzXWZcvI3IzDg-W2DwJwIoChqTDcE____LwReEgoENMlm5FhQl_8MVLjOB/s841/IMG_20260215_114726.jpg" alt="Order automation" />
+          <div class="hero-graphic-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Features / Navigation Section -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">What would you like to do?</h2>
+        <p class="section-subtitle">Choose an action below to get started</p>
+        <div class="feature-cards">
+          <!-- New Order Card (1st row, left) -->
+          <div id="feature-order-card" class="feature-card feature-card-order" style="--delay: 0">
+            <div class="feature-icon-wrap"><span class="feature-icon">📋</span></div>
+            <h3>Place New Order</h3>
+            <p>Create and submit a new order with real-time inventory validation</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#order">Do Order <span class="btn-arrow">→</span></a>
+          </div>
+
+          <!-- Quotation Card -->
+          <div class="feature-card" style="--delay: 0.05s">
+            <div class="feature-icon-wrap"><span class="feature-icon">💬</span></div>
+            <h3>Request Quotation</h3>
+            <p>Get a detailed quotation for bulk orders or custom requirements</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#quotation">Get Quotation <span class="btn-arrow">→</span></a>
+          </div>
+
+          <!-- View Products Card -->
+          <div class="feature-card" style="--delay: 0.1s">
+            <div class="feature-icon-wrap"><span class="feature-icon">🛍️</span></div>
+            <h3>Browse Products</h3>
+            <p>Explore our complete catalog of available products</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#products">View Products <span class="btn-arrow">→</span></a>
+          </div>
+
+          <!-- Order History Card -->
+          <div class="feature-card" style="--delay: 0.15s">
+            <div class="feature-icon-wrap"><span class="feature-icon">📊</span></div>
+            <h3>Order History</h3>
+            <p>Track your previous orders and their status</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#history">View History <span class="btn-arrow">→</span></a>
+          </div>
+
+          <!-- Review Card -->
+          <div class="feature-card" style="--delay: 0.2s">
+            <div class="feature-icon-wrap"><span class="feature-icon">⭐</span></div>
+            <h3>Submit a Review</h3>
+            <p>Share your feedback — AI analyzes sentiment and sends a personalized email response</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#review">Submit Review <span class="btn-arrow">→</span></a>
+          </div>
+
+          <!-- Complaint Card -->
+          <div class="feature-card" style="--delay: 0.25s">
+            <div class="feature-icon-wrap"><span class="feature-icon">⚠️</span></div>
+            <h3>Submit a Complaint</h3>
+            <p>Report issues — our support AI will analyze and log it automatically</p>
+            <a class="btn btn-primary feature-card-btn" href="orders.html#complaint">File Complaint <span class="btn-arrow">→</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="orders.html">Orders</a>
+      </div>
+      <div class="footer-content">
+        <p class="footer-copy">&copy; <span id="year"></span> AI Order Automation System</p>
+        <p class="footer-tagline">Enterprise-grade automation powered by AI</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK (compat version for global usage) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth-compat.js"></script>
+  
+  <!-- Firebase Auth Module -->
+  <script src="firebase-auth.js"></script>
+  
+  <!-- Firebase Config - Update with your credentials -->
+  <script src="firebase-config.js"></script>
+  
+  <!-- Main App Script -->
+  <script src="script.js"></script></body>
+</html>
